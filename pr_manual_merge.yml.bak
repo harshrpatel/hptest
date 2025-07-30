@@ -1,0 +1,36 @@
+name: PR Label → Manual Merge → Prod
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+  push:
+    branches: [main]
+
+jobs:
+  pr_hello:
+    if: github.event_name == 'pull_request'
+    name: PR Opened
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Say Hello
+        run: echo "hello world"
+
+      - name: Add 'approved' label
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          labels: approved
+
+  prod_hello:
+    if: github.event_name == 'push'
+    name: After Merge to Main
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Say Hello from Prod
+        run: echo "hello world prod"
