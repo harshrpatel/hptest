@@ -1,4 +1,4 @@
-name: CI/CD - PR Approval-Based Deploymenta
+name: CI/CD - PR Approval-Based Deployment
 
 on:
   pull_request:
