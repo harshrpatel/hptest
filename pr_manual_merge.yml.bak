@@ -1,4 +1,4 @@
-name: PR Label → Manual Merge → Prod
+name: PR Label → Manual Merge → Prod1
 
 on:
   pull_request:
