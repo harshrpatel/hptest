@@ -31,11 +31,25 @@ jobs:
 
       - name: Run Linter / Unit Tests
         run: echo "Linter or Unit Test execution here"
+  
+  deploy-staging:
+    name: "🚀 Deploy to staging"
+    runs-on: ubuntu-latest
+    needs: validate
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Stage (example)
+        run: |
+          echo "Deploying to Stage..."
 
   deploy:
     name: "🚀 Deploy to Production (Post-Approval)"
     runs-on: ubuntu-latest
     needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment: prod  # This will pause job and require manual approval
 
     steps:
