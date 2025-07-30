@@ -1,0 +1,45 @@
+name: Validate Code & Plan
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Environment to validate for'
+        required: false
+        default: 'all'
+        type: string
+    outputs:
+      validation-status:
+        description: 'Status of validation'
+        value: ${{ jobs.validate.outputs.status }}
+
+jobs:
+  validate:
+    name: "🔍 Validate Code & Plan"
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.validation-result.outputs.status }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup tools
+        run: |
+          echo "Install tools here like Terraform, Node.js, etc."
+          echo "Validating for environment: ${{ inputs.environment }}"
+
+      - name: Run Terraform Plan (example)
+        run: |
+          echo "Running Terraform plan..."
+          # terraform init
+          # terraform plan
+
+      - name: Run Linter / Unit Tests
+        run: echo "Linter or Unit Test execution here"
+
+      - name: Set validation result
+        id: validation-result
+        run: |
+          echo "status=success" >> $GITHUB_OUTPUT
+          echo "✅ Validation completed successfully" 

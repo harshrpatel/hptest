@@ -1,0 +1,51 @@
+name: Deploy to Production
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Production environment name'
+        required: false
+        default: 'production'
+        type: string
+      require-approval:
+        description: 'Whether to require manual approval'
+        required: false
+        default: true
+        type: boolean
+    outputs:
+      deployment-url:
+        description: 'URL of the deployed application'
+        value: ${{ jobs.deploy-production.outputs.deployment-url }}
+
+jobs:
+  deploy-production:
+    name: "🚀 Deploy to Production (Post-Approval)"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.require-approval && 'prod' || 'production' }}
+    outputs:
+      deployment-url: ${{ steps.deployment-url.outputs.url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup production environment
+        run: |
+          echo "Setting up production deployment..."
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Requires approval: ${{ inputs.require-approval }}"
+
+      - name: Deploy to Production
+        run: |
+          echo "Deploying to Production..."
+          # Add your actual deployment commands here
+          # Example: terraform apply -auto-approve
+          # or: kubectl apply -f k8s/production/
+
+      - name: Set deployment URL
+        id: deployment-url
+        run: |
+          # Set the actual deployment URL here
+          echo "url=https://production.example.com" >> $GITHUB_OUTPUT
+          echo "✅ Production deployment completed successfully" 

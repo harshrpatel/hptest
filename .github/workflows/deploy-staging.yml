@@ -1,0 +1,52 @@
+name: Deploy to Staging
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Staging environment name'
+        required: false
+        default: 'staging'
+        type: string
+      branch:
+        description: 'Branch to deploy'
+        required: false
+        default: ''
+        type: string
+    outputs:
+      deployment-url:
+        description: 'URL of the deployed application'
+        value: ${{ jobs.deploy-staging.outputs.deployment-url }}
+
+jobs:
+  deploy-staging:
+    name: "🚀 Deploy to Staging"
+    runs-on: ubuntu-latest
+    outputs:
+      deployment-url: ${{ steps.deployment-url.outputs.url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch || github.ref }}
+
+      - name: Setup deployment environment
+        run: |
+          echo "Setting up staging deployment..."
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Branch: ${{ inputs.branch || github.ref_name }}"
+
+      - name: Deploy to Stage (example)
+        run: |
+          echo "Deploying to Stage..."
+          # Add your actual deployment commands here
+          # Example: terraform apply -target=staging
+          # or: kubectl apply -f k8s/staging/
+
+      - name: Set deployment URL
+        id: deployment-url
+        run: |
+          # Set the actual deployment URL here
+          echo "url=https://staging.example.com" >> $GITHUB_OUTPUT
+          echo "✅ Staging deployment completed successfully" 

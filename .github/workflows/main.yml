@@ -11,53 +11,25 @@ on:
       - main
 
 jobs:
+  # Call the reusable validation workflow
   validate:
-    name: "🔍 Validate Code & Plan"
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/validate.yml
+    with:
+      environment: 'all'
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup tools
-        run: |
-          echo "Install tools here like Terraform, Node.js, etc."
-
-      - name: Run Terraform Plan (example)
-        run: |
-          echo "Running Terraform plan..."
-          # terraform init
-          # terraform plan
-
-      - name: Run Linter / Unit Tests
-        run: echo "Linter or Unit Test execution here"
-  
+  # Call the reusable staging deployment workflow
   deploy-staging:
-    name: "🚀 Deploy to staging"
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/deploy-staging.yml
     needs: validate
+    with:
+      environment: 'staging'
+      branch: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Deploy to Stage (example)
-        run: |
-          echo "Deploying to Stage..."
-
-  deploy:
-    name: "🚀 Deploy to Production (Post-Approval)"
-    runs-on: ubuntu-latest
+  # Call the reusable production deployment workflow (only on push to main)
+  deploy-production:
+    uses: ./.github/workflows/deploy-production.yml
     needs: validate
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    environment: prod  # This will pause job and require manual approval
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Deploy to Prod (example)
-        run: |
-          echo "Deploying to Production..."
-          # terraform apply -auto-approve
-          # or kubectl apply -f
+    with:
+      environment: 'production'
+      require-approval: true
