@@ -1,24 +1,24 @@
-name: commit-id-message
+name: Commit and Push with Original Message and Commit ID
 
 on:
   push:
     branches:
-      - '**'  # runs on any branch
+      - '**'  # Run on any branch
 
 jobs:
   commit-changes:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Git config
+      - name: Set Git Config
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Commit and push changes with original message and commit ID
+      - name: Commit and Push Changes
         run: |
           git add .
 
@@ -27,6 +27,14 @@ jobs:
           else
             ORIGINAL_MSG=$(git log -1 --pretty=format:"%s")
             COMMIT_ID=$(git rev-parse --short HEAD)
+            BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+
+            echo "🔧 Branch: $BRANCH_NAME"
+            echo "🔧 Commit ID: $COMMIT_ID"
+            echo "🔧 Commit Message: $ORIGINAL_MSG"
+
             git commit -m "${ORIGINAL_MSG} (${COMMIT_ID}) [skip ci]"
             git push
+
+            echo "🚀 Changes committed and pushed!"
           fi
