@@ -1,0 +1,32 @@
+name: Auto Commit Changes
+
+on:
+  push:
+    branches:
+      - '**'  # runs on any branch
+
+jobs:
+  commit-changes:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Git config
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and push changes with original message and commit ID
+        run: |
+          git add .
+
+          if git diff --cached --quiet; then
+            echo "✅ No changes to commit."
+          else
+            ORIGINAL_MSG=$(git log -1 --pretty=format:"%s")
+            COMMIT_ID=$(git rev-parse --short HEAD)
+            git commit -m "${ORIGINAL_MSG} (${COMMIT_ID}) [skip ci]"
+            git push
+          fi
