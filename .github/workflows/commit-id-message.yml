@@ -1,4 +1,4 @@
-name: Auto Commit Changes
+name: commit-id-message
 
 on:
   push:
