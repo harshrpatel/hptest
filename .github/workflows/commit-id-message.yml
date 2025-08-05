@@ -13,6 +13,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Show Commit Info
+      - name: Write Commit Info to Summary
         run: |
-          echo "$(git log -1 --pretty=format:'👤 %an%n🔢 %h%n📝 %s')"
+          echo "### ✅ Commit Information" >> $GITHUB_STEP_SUMMARY
+          echo "- 👤 Author: $(git log -1 --pretty=format:'%an')" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔢 Commit ID: $(git log -1 --pretty=format:'%h')" >> $GITHUB_STEP_SUMMARY
+          echo "- 📝 Message: $(git log -1 --pretty=format:'%s')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### 📄 Files Changed:" >> $GITHUB_STEP_SUMMARY
+          git diff-tree --no-commit-id --name-only -r HEAD >> $GITHUB_STEP_SUMMARY
