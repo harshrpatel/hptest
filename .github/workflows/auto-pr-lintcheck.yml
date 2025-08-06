@@ -22,7 +22,8 @@ jobs:
             perf
             ci
           requireScope: false
-          subjectPattern: '^(.*)\((TEL|WI)-\d+\)$'
+         # This pattern enforces: <type>: (TEL|WI-xxxx) <description>
+          subjectPattern: '^(feat|fix|chore|docs|refactor|test|style|perf|ci): \((TEL|WI)-\d+\) .+'
           subjectPatternError: |
             ❌ PR title format is invalid.
             ➤ Use this format: <type>: <description> (TEL-1234) or (WI-1234)
