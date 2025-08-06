@@ -21,5 +21,8 @@ jobs:
             style
             perf
             ci
+          requireScope: false
+          subjectPattern: '^(.*)\(WI-\d+\)$'
+          subjectPatternError: '❌ PR title must end with a work item in format (WI-1234)'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
