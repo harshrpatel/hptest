@@ -22,7 +22,10 @@ jobs:
             perf
             ci
           requireScope: false
-          subjectPattern: '^(.*)\(WI-\d+\)$'
-          subjectPatternError: '❌ PR title must end with a work item in format (WI-1234)'
+          subjectPattern: '^(.*)\((TEL|WI)-\d+\)$'
+          subjectPatternError: |
+            ❌ PR title format is invalid.
+            ➤ Use this format: <type>: <description> (TEL-1234) or (WI-1234)
+            ✅ Example: feat: add user login page (TEL-1234)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
