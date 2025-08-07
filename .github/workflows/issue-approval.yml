@@ -1,0 +1,57 @@
+name: 'Approve by Team (PR Comment Based)'
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  approve:
+    name: 'Check Approval Comment'
+    runs-on: ubuntu-latest
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/approve')
+    steps:
+      - name: Validate Team Membership and Approve
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GH_PAT }}  # Must be a PAT with read:org
+          script: |
+            const teamSlug = 'approver-list'; // <-- change this to your team slug if needed
+            const username = context.actor;
+            const org = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.issue.number;
+
+            let isApprover = false;
+
+            try {
+              const res = await github.rest.teams.getMembershipForUserInOrg({
+                org,
+                team_slug: teamSlug,
+                username,
+              });
+
+              isApprover = res.status === 200;
+            } catch (e) {
+              console.log(`Error checking team membership: ${e.message}`);
+            }
+
+            if (!isApprover) {
+              await github.rest.issues.createComment({
+                owner: org,
+                repo,
+                issue_number,
+                body: `@${username} is **not authorized** to approve. You must be in the **${teamSlug}** team.`,
+              });
+              throw new Error('Access denied: not in team');
+            }
+
+            await github.rest.issues.createComment({
+              owner: org,
+              repo,
+              issue_number,
+              body: `@${username} is authorized to approve. Approval accepted.`,
+            });
